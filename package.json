@@ -1,0 +1,30 @@
+{
+  "name": "chanapp-doctor",
+  "version": "0.0.2",
+  "description": "chanapp install doctor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "cross-spawn": "^2.2.3",
+    "inquirer": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ggpp224/chanapp-doctor.git"
+  },
+  "keywords": [
+    "chanapp",
+    "doctor",
+    "command-line"
+  ],
+  "author": "guopeng",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ggpp224/chanapp-doctor/issues"
+  },
+  "homepage": "https://github.com/ggpp224/chanapp-doctor#readme"
+}
