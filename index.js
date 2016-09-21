@@ -6,7 +6,6 @@
 var spawn = require('cross-spawn');
 var chalk = require('chalk');
 var inquirer = require('inquirer');
-
 var child_process = require('child_process')
 
 function check(cb, silent) {
