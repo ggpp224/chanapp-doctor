@@ -6,7 +6,14 @@
 var spawn = require('cross-spawn');
 var chalk = require('chalk');
 var inquirer = require('inquirer');
-var child_process = require('child_process')
+var child_process = require('child_process');
+
+function sudo(cmd) {
+    if(process.platform !== 'win32'){
+        return 'sudo '+cmd;
+    }
+    return cmd;
+}
 
 /**
  *
@@ -30,9 +37,9 @@ function check(cb) {
     var npmVersion = child_process.spawnSync('npm',['-v'],{encoding:'utf8'}).stdout.replace('\n','');
     var majorNpmVersion = npmVersion.charAt(0);
     if(parseInt(majorNpmVersion)<3){
-        console.log(chalk.yellow('✗      npm版本过低，建议升级至npm 3以上'));
+        console.log(chalk.red('✗      npm版本过低，建议升级至npm 3以上'));
         console.log(chalk.dim('       更新到最新版本npm， 请使用如下命令：'))
-        console.log(chalk.magenta('       npm install -g npm'));
+        console.log(chalk.magenta('       npm install -g npm@3.10.4'));
     }else{
         console.log(chalk.green('✔      npm: v'+npmVersion+'.'))
     }
@@ -41,10 +48,14 @@ function check(cb) {
     var cnpm = spawn.sync('cnpm');
     if(cnpm.error){
         // 未安装 cnpm
-        console.log(chalk.yellow('✗  您还没有安装用户获取畅捷通私有npm模块的客户端(cnpm)'));
-        console.log(chalk.green('在终端中执行如下命令来安装和设置cnpm: '));
-        console.log(chalk.dim('$ npm install -g cnpm --registry=http://registry.npm.taobao.org'))
-        console.log(chalk.dim('$ cnpm set registry http://172.18.2.109:7001'))
+        console.log(chalk.yellow('✗      您还没有安装用户获取畅捷通私有npm模块的客户端(cnpm)'));
+        console.log(chalk.dim('在终端中执行如下命令来安装和设置cnpm: '));
+
+        console.log('\n 你可以选择手动安装')
+        console.log(chalk.magenta('$ npm install -g cnpm --registry=http://registry.npm.taobao.org'))
+        console.log(chalk.magenta('$ cnpm set registry http://172.18.2.109:7001'))
+
+        console.log('\n也可以选择自动安装：')
         inquirer.prompt([
             {
                 type:'confirm',
@@ -52,8 +63,9 @@ function check(cb) {
                 message:'是否自动安装设置?'
             }
         ]).then((answers) => {
+            // 安装设置cnpm
             if(answers.cnpm){
-                spawn.sync('npm',['install', '-g', 'cnpm', '--registry=http://registry.npm.taobao.org'], { stdio: 'inherit' });
+                child_process.execSync(sudo('npm install -g cnpm --registry=http://registry.npm.taobao.org'), {stdio: 'inherit'});
                 spawn.sync('cnpm',['set', 'registry', 'http://172.18.2.109:7001'], { stdio: 'inherit' });
             }
 
