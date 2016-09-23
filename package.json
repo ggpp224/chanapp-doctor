@@ -1,8 +1,11 @@
 {
   "name": "chanapp-doctor",
-  "version": "0.0.3",
+  "version": "0.0.8",
   "description": "chanapp install doctor",
   "main": "index.js",
+  "bin": {
+      "chanapp-doctor": "./bin/chanapp-doctor"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
