@@ -8,6 +8,8 @@ var chalk = require('chalk');
 var inquirer = require('inquirer');
 var child_process = require('child_process');
 
+var isWindows = process.platform === 'win32';
+
 function sudo(cmd) {
     if(process.platform !== 'win32'){
         return 'sudo '+cmd;
@@ -34,14 +36,18 @@ function check(cb) {
         console.log(chalk.green('✔      node: '+nodeVersion+'.'))
     }
 
-    var npmVersion = child_process.spawnSync('npm',['-v'],{encoding:'utf8'}).stdout.replace('\n','');
-    var majorNpmVersion = npmVersion.charAt(0);
-    if(parseInt(majorNpmVersion)<3){
-        console.log(chalk.red('✗      npm版本过低，建议升级至npm 3以上'));
-        console.log(chalk.dim('       更新到最新版本npm， 请使用如下命令：'))
-        console.log(chalk.magenta('       npm install -g npm@3.10.4'));
-    }else{
-        console.log(chalk.green('✔      npm: v'+npmVersion+'.'))
+    var npmVersion = child_process.spawnSync(isWindows?'npm.cmd':'npm',['-v'],{encoding:'utf8',stdio: ['pipe', 'pipe', 'pipe']}).stdout;
+
+    if(npmVersion){
+        npmVersion = npmVersion.replace('\n','');
+        var majorNpmVersion = npmVersion.charAt(0);
+        if(parseInt(majorNpmVersion)<3){
+            console.log(chalk.red('✗      npm版本过低，建议升级至npm 3以上'));
+            console.log(chalk.dim('       更新到最新版本npm， 请使用如下命令：'))
+            console.log(chalk.magenta('       npm install -g npm@3.10.4'));
+        }else{
+            console.log(chalk.green('✔      npm: v'+npmVersion+'.'))
+        }
     }
 
     // 检查cnpm
@@ -65,7 +71,11 @@ function check(cb) {
         ]).then((answers) => {
             // 安装设置cnpm
             if(answers.cnpm){
-                child_process.execSync(sudo('npm install -g cnpm --registry=http://registry.npm.taobao.org'), {stdio: 'inherit'});
+                if(isWindows){
+                    spawn.sync('npm',['install','cnpm', '-g'],{stdio: 'inherit'});
+                }else{
+                    child_process.execSync('sudo npm install -g cnpm --registry=http://registry.npm.taobao.org', {stdio: 'inherit'});
+                }
                 spawn.sync('cnpm',['set', 'registry', 'http://172.18.2.109:7001'], { stdio: 'inherit' });
             }
 

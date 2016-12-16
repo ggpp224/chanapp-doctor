@@ -1,6 +1,6 @@
 {
   "name": "chanapp-doctor",
-  "version": "0.0.12",
+  "version": "1.0.1",
   "description": "chanapp install doctor",
   "main": "index.js",
   "bin": {
